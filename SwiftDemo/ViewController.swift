@@ -45,8 +45,16 @@ class ViewController: UIViewController {
     @IBAction func countdownBtnClicked(sender: UIButton) {
         
         // Disable the button
-        // performCountdown()
-        // Enable the button
+        sender.isEnabled = false
+        
+        // Perform Countdown
+        self.performCountdown(){
+            
+            // Enable the Button and Reset
+            sender.isEnabled = true
+            self.countdown.text = "\(100)"
+            self.view.backgroundColor = .white
+        }
 
     }
     
@@ -60,11 +68,25 @@ class ViewController: UIViewController {
      * 4) The countdown should only decrement every 0.5 seconds
      * 5) DO NOT EDIT THE METHOD SIGNATURE
      */
-    func performCountdown(completion: () -> Void) {
+    func performCountdown(completion: @escaping () -> Void) {
         
-            // For 0 to 100 {
-            // Pause the thread with this: NSThread.sleepForTimeInterval(0.5)
-            //}
+        // start coundwon on a new thread
+        DispatchQueue.global().async {
+            for i in 0...100{
+                
+                let timeRemaining = 100 - i
+                
+                //update the countdown label on a new thread
+                DispatchQueue.main.async {
+                    self.countdown.text = "\(timeRemaining)"
+                }
+                Thread.sleep(forTimeInterval: 0.5)
+            }
+            // call completion on a new thread when done
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
     }
     
     
